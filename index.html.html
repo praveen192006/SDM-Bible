@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SDM Bible — Command Center</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root{
+  --bg:#F2EAD8;
+  --surface:#FBF7EC;
+  --surface-2:#EEE3C8;
+  --border:#D9CBA6;
+  --border-soft:#E3D6B4;
+  --ink:#332B1F;
+  --ink-muted:#6E6248;
+  --ink-faint:#96896A;
+  --amber:#A15E10;
+  --amber-dim:#C4913F;
+  --green:#3B7A4E;
+  --green-bg:#E5EFDA;
+  --amber-bg:#F7E5BC;
+  --red:#B04A2E;
+  --red-bg:#F5DDCF;
+  --serif:'Spectral',Georgia,serif;
+  --sans:'IBM Plex Sans',-apple-system,sans-serif;
+  --mono:'IBM Plex Mono',monospace;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:var(--sans);
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:980px;margin:0 auto;padding:0 24px 80px;}
+
+/* ---------- Header ---------- */
+header{
+  padding:48px 0 28px;
+  border-bottom:1px solid var(--border);
+  margin-bottom:0;
+}
+.eyebrow{
+  font-family:var(--mono);
+  font-size:12px;
+  letter-spacing:.06em;
+  color:var(--amber);
+  margin:0 0 10px;
+}
+h1{
+  font-family:var(--serif);
+  font-weight:600;
+  font-size:38px;
+  margin:0 0 8px;
+  line-height:1.1;
+  color:#332B1F;
+}
+.subtitle{
+  color:var(--ink-muted);
+  font-size:15px;
+  max-width:560px;
+  margin:0 0 26px;
+}
+.countdown-row{
+  display:flex;
+  align-items:center;
+  gap:28px;
+  flex-wrap:wrap;
+}
+.countdown{
+  display:flex;
+  align-items:baseline;
+  gap:10px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  padding:12px 18px;
+  border-radius:6px;
+}
+.countdown .num{
+  font-family:var(--serif);
+  font-size:32px;
+  font-weight:600;
+  color:var(--amber);
+}
+.countdown .label{
+  font-size:12px;
+  color:var(--ink-muted);
+  font-family:var(--mono);
+}
+.join-date-field{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-muted);}
+.join-date-field input{
+  background:var(--surface);
+  border:1px solid var(--border);
+  color:var(--ink);
+  font-family:var(--mono);
+  font-size:13px;
+  padding:8px 10px;
+  border-radius:4px;
+}
+.progress-chip{
+  font-family:var(--mono);
+  font-size:12px;
+  color:var(--ink-muted);
+}
+.progress-chip b{color:var(--ink);}
+
+/* ---------- Tabs ---------- */
+nav.tabs{
+  display:flex;
+  gap:2px;
+  margin:32px 0 32px;
+  border-bottom:1px solid var(--border);
+  overflow-x:auto;
+}
+nav.tabs button{
+  background:none;
+  border:none;
+  color:var(--ink-muted);
+  font-family:var(--sans);
+  font-size:14px;
+  padding:12px 18px;
+  cursor:pointer;
+  white-space:nowrap;
+  border-bottom:2px solid transparent;
+  transition:color .15s;
+}
+nav.tabs button:hover{color:var(--ink);}
+nav.tabs button.active{color:var(--amber);border-bottom-color:var(--amber);}
+
+.panel{display:none;}
+.panel.active{display:block;animation:fade .2s ease;}
+@keyframes fade{from{opacity:0;}to{opacity:1;}}
+
+/* ---------- Shared blocks ---------- */
+h2.section-title{
+  font-family:var(--serif);
+  font-size:22px;
+  font-weight:600;
+  margin:0 0 4px;
+  color:#332B1F;
+}
+.section-sub{color:var(--ink-muted);font-size:14px;margin:0 0 22px;}
+
+.principle{
+  border-left:3px solid var(--amber);
+  padding:14px 20px;
+  background:var(--surface);
+  font-family:var(--serif);
+  font-size:16px;
+  font-style:italic;
+  color:#4A3B1E;
+  margin:0 0 32px;
+  border-radius:0 6px 6px 0;
+}
+
+table.model{
+  width:100%;
+  border-collapse:collapse;
+  margin-bottom:36px;
+  font-size:14px;
+}
+table.model th{
+  text-align:left;
+  font-family:var(--mono);
+  font-size:11px;
+  letter-spacing:.04em;
+  color:var(--ink-faint);
+  padding:8px 14px;
+  border-bottom:1px solid var(--border);
+  text-transform:uppercase;
+}
+table.model td{
+  padding:14px 14px;
+  border-bottom:1px solid var(--border-soft);
+  vertical-align:top;
+  color:var(--ink);
+}
+table.model td.level{font-weight:600;color:var(--amber);white-space:nowrap;}
+
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:36px;}
+@media(max-width:640px){.two-col{grid-template-columns:1fr;}}
+.col-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:20px 22px;}
+.col-card h3{font-family:var(--serif);font-size:16px;margin:0 0 12px;}
+.col-card.good h3{color:var(--green);}
+.col-card.bad h3{color:var(--red);}
+.col-card ul{margin:0;padding-left:18px;color:var(--ink-muted);font-size:14px;line-height:1.7;}
+.col-card ul li{margin-bottom:6px;}
+
+.philosophy{list-style:none;margin:0;padding:0;counter-reset:phil;}
+.philosophy li{
+  counter-increment:phil;
+  display:flex;
+  gap:14px;
+  padding:12px 0;
+  border-bottom:1px solid var(--border-soft);
+  font-size:14px;
+  color:var(--ink);
+  cursor:pointer;
+}
+.philosophy li::before{
+  content:counter(phil);
+  font-family:var(--mono);
+  color:var(--ink-faint);
+  min-width:20px;
+}
+.philosophy li.done{color:var(--ink-faint);text-decoration:line-through;}
+.philosophy li.done::before{color:var(--green);}
+
+/* ---------- Account health ---------- */
+.health-grid{display:flex;flex-direction:column;gap:12px;margin-bottom:20px;}
+.health-row{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:16px 20px;
+  display:grid;
+  grid-template-columns:170px 1fr 130px;
+  gap:18px;
+  align-items:start;
+}
+@media(max-width:700px){.health-row{grid-template-columns:1fr;}}
+.health-row .dim{font-weight:600;font-size:14px;}
+.health-row .q{font-size:12px;color:var(--ink-faint);margin-top:3px;}
+.health-row textarea{
+  width:100%;
+  background:var(--surface-2);
+  border:1px solid var(--border-soft);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:13px;
+  padding:8px 10px;
+  border-radius:5px;
+  resize:vertical;
+  min-height:38px;
+}
+select.status{
+  width:100%;
+  font-family:var(--mono);
+  font-size:12px;
+  padding:8px 10px;
+  border-radius:5px;
+  border:1px solid var(--border-soft);
+  cursor:pointer;
+  font-weight:600;
+}
+select.status.G{background:var(--green-bg);color:var(--green);}
+select.status.A{background:var(--amber-bg);color:var(--amber);}
+select.status.R{background:var(--red-bg);color:var(--red);}
+
+/* ---------- 20 day plan ---------- */
+.progress-bar-outer{
+  height:6px;background:var(--surface-2);border-radius:3px;overflow:hidden;margin-bottom:28px;
+}
+.progress-bar-inner{height:100%;background:var(--amber);transition:width .3s;}
+.day-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-left:3px solid var(--border);
+  border-radius:0 8px 8px 0;
+  padding:16px 20px;
+  margin-bottom:10px;
+  transition:border-color .2s;
+}
+.day-card.done{border-left-color:var(--green);}
+.day-card-top{display:flex;align-items:flex-start;gap:14px;}
+.day-card input[type=checkbox]{
+  margin-top:4px;
+  width:16px;height:16px;
+  accent-color:var(--green);
+  cursor:pointer;
+  flex-shrink:0;
+}
+.day-card .day-meta{flex:1;}
+.day-num{font-family:var(--mono);font-size:11px;color:var(--amber);letter-spacing:.04em;}
+.day-focus{font-weight:600;font-size:15px;margin:2px 0 4px;}
+.day-focus.done-text{color:var(--ink-faint);}
+.day-output{font-size:13px;color:var(--ink-muted);}
+.day-notes-toggle{
+  background:none;border:none;color:var(--ink-faint);font-size:12px;
+  cursor:pointer;margin-top:8px;padding:0;font-family:var(--mono);
+}
+.day-notes-toggle:hover{color:var(--amber);}
+.day-notes{display:none;margin-top:10px;}
+.day-notes.open{display:block;}
+.day-notes textarea{
+  width:100%;background:var(--surface-2);border:1px solid var(--border-soft);
+  color:var(--ink);font-family:var(--sans);font-size:13px;padding:10px;border-radius:5px;
+  min-height:60px;resize:vertical;
+}
+
+/* ---------- Command center ---------- */
+.cc-list{display:flex;flex-direction:column;gap:8px;}
+.cc-row{
+  display:flex;align-items:center;gap:12px;
+  background:var(--surface);border:1px solid var(--border);border-radius:6px;
+  padding:12px 16px;
+}
+.cc-row input[type=checkbox]{width:16px;height:16px;accent-color:var(--green);cursor:pointer;flex-shrink:0;}
+.cc-num{font-family:var(--mono);font-size:11px;color:var(--ink-faint);min-width:20px;}
+.cc-name{font-size:14px;flex:1;}
+.cc-name.done{color:var(--ink-faint);text-decoration:line-through;}
+
+/* ---------- Reference ---------- */
+.ref-block{margin-bottom:36px;}
+.calc{
+  background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:22px 24px;
+}
+.calc-row{display:flex;gap:20px;flex-wrap:wrap;margin-bottom:16px;}
+.calc-field{flex:1;min-width:140px;}
+.calc-field label{display:block;font-family:var(--mono);font-size:11px;color:var(--ink-faint);margin-bottom:6px;}
+.calc-field input{
+  width:100%;background:var(--surface-2);border:1px solid var(--border-soft);color:var(--ink);
+  font-family:var(--mono);font-size:15px;padding:9px 10px;border-radius:5px;
+}
+.calc-result{
+  display:flex;gap:28px;padding-top:14px;border-top:1px solid var(--border-soft);flex-wrap:wrap;
+}
+.calc-result .r{font-family:var(--mono);}
+.calc-result .r .v{font-size:22px;font-weight:600;color:var(--amber);}
+.calc-result .r .l{font-size:11px;color:var(--ink-faint);display:block;margin-top:2px;}
+
+.metric-chain{
+  font-family:var(--mono);font-size:13px;color:var(--ink);
+  background:var(--surface);border:1px solid var(--border);border-radius:6px;
+  padding:16px 18px;line-height:2;margin-bottom:14px;
+}
+.metric-chain .arrow{color:var(--amber);margin:0 6px;}
+.example-box{
+  background:var(--surface);border:1px solid var(--border);border-radius:6px;
+  padding:16px 18px;font-size:13px;color:var(--ink-muted);margin-top:10px;
+}
+.example-box b{color:var(--ink);}
+
+.esc-compare{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media(max-width:640px){.esc-compare{grid-template-columns:1fr;}}
+.esc-box{border-radius:6px;padding:16px 18px;font-size:13px;line-height:1.6;}
+.esc-box.bad{background:var(--red-bg);border:1px solid #E3B7A0;color:#7A3520;}
+.esc-box.good{background:var(--green-bg);border:1px solid #B9D4A9;color:#2C5C3A;}
+.esc-box .tag{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:8px;}
+
+table.ref-table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:8px;}
+table.ref-table th{
+  text-align:left;font-family:var(--mono);font-size:11px;color:var(--ink-faint);
+  padding:8px 12px;border-bottom:1px solid var(--border);text-transform:uppercase;
+}
+table.ref-table td{padding:10px 12px;border-bottom:1px solid var(--border-soft);color:var(--ink-muted);}
+table.ref-table td.k{color:var(--ink);font-weight:600;white-space:nowrap;}
+
+.accordion{border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:10px;}
+.acc-head{
+  width:100%;background:var(--surface);border:none;color:var(--ink);
+  font-family:var(--sans);font-size:14px;font-weight:600;text-align:left;
+  padding:14px 18px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;
+}
+.acc-head:hover{background:var(--surface-2);}
+.acc-head .chev{color:var(--amber);font-family:var(--mono);transition:transform .2s;}
+.acc-head.open .chev{transform:rotate(90deg);}
+.acc-body{display:none;background:var(--surface-2);padding:6px 18px 14px;}
+.acc-body.open{display:block;}
+.acc-body ul{margin:0;padding-left:18px;color:var(--ink-muted);font-size:13px;line-height:1.9;}
+
+footer{
+  margin-top:60px;padding-top:20px;border-top:1px solid var(--border);
+  font-size:12px;color:var(--ink-faint);font-family:var(--mono);
+  display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;
+}
+.reset-btn{background:none;border:1px solid var(--border);color:var(--ink-faint);
+  font-family:var(--mono);font-size:11px;padding:6px 12px;border-radius:4px;cursor:pointer;}
+.reset-btn:hover{border-color:var(--red);color:var(--red);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <p class="eyebrow">Service delivery → delivery management → commercial ownership</p>
+  <h1>The SDM Bible</h1>
+  <p class="subtitle">Your 20-day operating manual before joining. Not for memorizing — for working through, one section a day, with your own notes attached.</p>
+  <div class="countdown-row">
+    <div class="countdown">
+      <span class="num" id="daysLeft">—</span>
+      <span class="label">days to<br>joining</span>
+    </div>
+    <div class="join-date-field">
+      <span>Joining date</span>
+      <input type="date" id="joinDate">
+    </div>
+    <div class="progress-chip" id="overallProgress"></div>
+  </div>
+</header>
+
+<nav class="tabs" id="tabs">
+  <button data-tab="overview" class="active">Overview</button>
+  <button data-tab="health">Account health</button>
+  <button data-tab="plan">20-day plan</button>
+  <button data-tab="cc">Command center</button>
+  <button data-tab="ref">Reference</button>
+</nav>
+
+<!-- OVERVIEW -->
+<section class="panel active" id="panel-overview">
+  <h2 class="section-title">The SDM mental model</h2>
+  <p class="section-sub">Career progression: service → people → client → financials → commercials → growth → business leadership.</p>
+  <table class="model">
+    <tr><th>Level</th><th>Primary question</th><th>What you own</th></tr>
+    <tr><td class="level">Service Delivery Manager</td><td>Are we delivering what we promised?</td><td>SLA, KPI, service quality, operations, customer experience, risks</td></tr>
+    <tr><td class="level">Delivery Manager</td><td>Are we delivering the engagement successfully and profitably?</td><td>Delivery, resources, revenue, cost, margin, forecast, scope, commercials</td></tr>
+    <tr><td class="level">Delivery Partner</td><td>Are we protecting and growing the business?</td><td>Account strategy, executive relationships, renewals, expansion, P&L, growth</td></tr>
+  </table>
+
+  <p class="principle">"Your job is not to make the account look green. Your job is to make the account healthy."</p>
+
+  <div class="two-col">
+    <div class="col-card good">
+      <h3>The great SDM</h3>
+      <ul>
+        <li>Creates operational control instead of reacting to every problem</li>
+        <li>Knows the contract and prevents accidental scope creep</li>
+        <li>Turns metrics into decisions: metric → trend → root cause → action → owner → due date</li>
+        <li>Builds trust without over-promising</li>
+        <li>Knows when to solve vs. when to escalate</li>
+        <li>Understands capacity, skills, attrition, succession</li>
+        <li>Understands financial consequences of operational calls</li>
+        <li>Treats improvement as normal operations, not a side project</li>
+      </ul>
+    </div>
+    <div class="col-card bad">
+      <h3>The wrong SDM</h3>
+      <ul>
+        <li>Runs meetings all day, can't explain business impact</li>
+        <li>Reports SLA percentages without root causes</li>
+        <li>Says yes to out-of-scope work to keep the peace</li>
+        <li>Escalates everything upward instead of owning outcomes</li>
+        <li>Knows the team but not the contract</li>
+        <li>Knows revenue but not cost or margin</li>
+        <li>Builds decks that hide operational reality</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2 class="section-title">Your operating philosophy</h2>
+  <p class="section-sub">Click a line off as it becomes second nature.</p>
+  <ol class="philosophy" id="philosophyList">
+    <li data-i="0">Know the contract — if you don't know what was sold, you can't manage delivery</li>
+    <li data-i="1">Know the service — dependencies, failure points, business impact</li>
+    <li data-i="2">Know the people — capacity, skills and succession determine survival under pressure</li>
+    <li data-i="3">Know the customer — what matters to them, not what's easy to report</li>
+    <li data-i="4">Know the numbers — revenue, cost, utilization, margin, forecast</li>
+    <li data-i="5">Protect scope — being helpful is good, giving away funded work is not</li>
+    <li data-i="6">Manage trends, not snapshots — a green number today can hide a deteriorating system</li>
+    <li data-i="7">Escalate with solutions — never throw a problem over the wall</li>
+    <li data-i="8">Build systems — an operation that works without constant personal intervention</li>
+    <li data-i="9">Think one level above your title</li>
+  </ol>
+</section>
+
+<!-- ACCOUNT HEALTH -->
+<section class="panel" id="panel-health">
+  <h2 class="section-title">Account health assessment</h2>
+  <p class="section-sub">Your one-page read on any account — build it as a habit for every engagement, starting with a hypothetical one now.</p>
+  <div class="health-grid" id="healthGrid"></div>
+</section>
+
+<!-- 20 DAY PLAN -->
+<section class="panel" id="panel-plan">
+  <h2 class="section-title">The 20-day preparation plan</h2>
+  <p class="section-sub">60–90 minutes reading, 30–45 minutes on your own notes, each day.</p>
+  <div class="progress-bar-outer"><div class="progress-bar-inner" id="planBar" style="width:0%"></div></div>
+  <div id="dayList"></div>
+</section>
+
+<!-- COMMAND CENTER -->
+<section class="panel" id="panel-cc">
+  <h2 class="section-title">Your SDM command center</h2>
+  <p class="section-sub">The artifacts to build for yourself — in Excel, PowerPoint, OneNote, SharePoint, or whatever your new company uses.</p>
+  <div class="cc-list" id="ccList"></div>
+</section>
+
+<!-- REFERENCE -->
+<section class="panel" id="panel-ref">
+  <h2 class="section-title">Reference</h2>
+  <p class="section-sub">The formulas, frameworks and question banks — for quick lookup during the 20 days and after.</p>
+
+  <div class="ref-block">
+    <h3 style="font-family:var(--serif);font-size:16px;margin-bottom:12px;">Margin calculator</h3>
+    <div class="calc">
+      <div class="calc-row">
+        <div class="calc-field"><label>Revenue</label><input type="number" id="calcRevenue" value="10000000"></div>
+        <div class="calc-field"><label>Delivery cost</label><input type="number" id="calcCost" value="7000000"></div>
+      </div>
+      <div class="calc-result">
+        <div class="r"><span class="v" id="calcGP">—</span><span class="l">Gross profit</span></div>
+        <div class="r"><span class="v" id="calcMargin">—</span><span class="l">Gross margin %</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ref-block">
+    <h3 style="font-family:var(--serif);font-size:16px;margin-bottom:12px;">Utilization calculator</h3>
+    <div class="calc">
+      <div class="calc-row">
+        <div class="calc-field"><label>Headcount</label><input type="number" id="calcHC" value="10"></div>
+        <div class="calc-field"><label>Available hours / person</label><input type="number" id="calcHrs" value="160"></div>
+        <div class="calc-field"><label>Billable hours</label><input type="number" id="calcBillable" value="1280"></div>
+      </div>
+      <div class="calc-result">
+        <div class="r"><span class="v" id="calcCapacity">—</span><span class="l">Total capacity (hrs)</span></div>
+        <div class="r"><span class="v" id="calcUtil">—</span><span class="l">Utilization %</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ref-block">
+    <h3 style="font-family:var(--serif);font-size:16px;margin-bottom:12px;">The metric discipline</h3>
+    <div class="metric-chain">
+      Metric <span class="arrow">→</span> Target <span class="arrow">→</span> Trend <span class="arrow">→</span> Root cause <span class="arrow">→</span> Business impact <span class="arrow">→</span> Corrective action <span class="arrow">→</span> Owner <span class="arrow">→</span> Due date <span class="arrow">→</span> Expected result
+    </div>
+    <div class="example-box"><b>Example:</b> SLA 96.8% vs 98% target; declining for three months; root cause is L2 capacity plus recurring incidents; business impact is delayed resolution; action is capacity rebalance plus problem elimination; owner is service lead; recovery expected next month.</div>
+  </div>
+
+  <div class="ref-block">
+    <h3 style="font-family:var(--serif);font-size:16px;margin-bottom:12px;">Escalation — bad vs. good</h3>
+    <div class="esc-compare">
+      <div class="esc-box bad"><span class="tag">Bad escalation</span>"We have a problem and need help."</div>
+      <div class="esc-box good"><span class="tag">Good escalation</span>"Service X has had three P1 incidents in four weeks. The immediate cause is addressed, but the underlying capacity constraint remains. We need two additional specialist resources or approval for a platform change. Without action, another outage is likely."</div>
+    </div>
+  </div>
+
+  <div class="ref-block">
+    <h3 style="font-family:var(--serif);font-size:16px;margin-bottom:12px;">RAID</h3>
+    <table class="ref-table">
+      <tr><th>Type</th><th>Meaning</th><th>Example</th></tr>
+      <tr><td class="k">Risk</td><td>Something that may happen</td><td>Critical SME may leave</td></tr>
+      <tr><td class="k">Assumption</td><td>Something treated as true</td><td>Vendor responds within agreed time</td></tr>
+      <tr><td class="k">Issue</td><td>Something already happening</td><td>Recurring P1 incidents</td></tr>
+      <tr><td class="k">Dependency</td><td>Required from another party</td><td>Client approval required</td></tr>
+    </table>
+    <div class="example-box">Review weekly. A RAID log that never changes is usually a dead document. Every serious risk needs an owner, mitigation, due date and escalation path.</div>
+  </div>
+
+  <div class="ref-block">
+    <h3 style="font-family:var(--serif);font-size:16px;margin-bottom:12px;">Governance cadence</h3>
+    <table class="ref-table">
+      <tr><th>Cadence</th><th>Purpose</th></tr>
+      <tr><td class="k">Daily / operational</td><td>P1/P2, blockers, critical actions, immediate risk</td></tr>
+      <tr><td class="k">Weekly internal</td><td>SLA, people, incidents, risks, actions, capacity</td></tr>
+      <tr><td class="k">Weekly client</td><td>Service performance, issues, decisions, improvements</td></tr>
+      <tr><td class="k">Monthly service review</td><td>Trends, SLA, customer sentiment, RCA, continual improvement</td></tr>
+      <tr><td class="k">Monthly financial</td><td>Revenue, cost, margin, forecast, variance, utilization</td></tr>
+      <tr><td class="k">Quarterly business review</td><td>Business outcomes, roadmap, strategic risks, value, growth</td></tr>
+    </table>
+  </div>
+
+  <div class="ref-block">
+    <h3 style="font-family:var(--serif);font-size:16px;margin-bottom:12px;">Questions you should be able to answer</h3>
+    <div id="accordionWrap"></div>
+  </div>
+</section>
+
+<footer>
+  <span>Your notes are saved automatically to this dashboard.</span>
+  <button class="reset-btn" id="resetBtn">Reset all progress</button>
+</footer>
+</div>
+
+<script>
+const STORAGE_KEY = 'sdm-dashboard-state';
+
+const DAYS = [
+  ["Understand the SDM role","Write your own definition of excellent service delivery."],
+  ["Contract and SOW","Learn scope, exclusions, SLAs, assumptions and change control."],
+  ["SLA/KPI","Build a sample service scorecard and interpret trends."],
+  ["Incident management","Practice handling a P1 from detection to RCA."],
+  ["Problem/change management","Design a problem review and change governance."],
+  ["Stakeholders","Create a stakeholder map and communication plan."],
+  ["People management","Build a capacity and skills matrix."],
+  ["RAID and risk","Create a RAID log and escalation model."],
+  ["Service reporting","Build a one-page SDM dashboard."],
+  ["Client governance","Create a monthly service review structure."],
+  ["P&L basics","Practice revenue, cost, gross profit and margin."],
+  ["Utilization","Calculate billable capacity and understand its impact."],
+  ["Revenue leakage","Practice scope-creep and CR scenarios."],
+  ["Forecasting","Practice actual vs forecast and variance analysis."],
+  ["Commercial thinking","Work through pricing, effort, cost and margin scenarios."],
+  ["Difficult conversations","Practice escalation, pushback and expectation management."],
+  ["Account health","Build a complete hypothetical Account Health Assessment."],
+  ["30-60-90 plan","Create your takeover plan for a new account."],
+  ["Executive thinking","Explain the account in five minutes to a CIO."],
+  ["Mock SDM day","Run a full simulation: SLA failure + staffing issue + scope creep + financial impact."]
+];
+
+const HEALTH_DIMS = [
+  ["Contract & scope","Do we know exactly what we owe?"],
+  ["Service","Are SLAs and KPIs stable?"],
+  ["People","Do we have the right capacity and skills?"],
+  ["Customer","Does the client trust us?"],
+  ["Technology","Are major technical risks controlled?"],
+  ["Process","Are governance and controls working?"],
+  ["Financial","Are revenue, cost and margin healthy?"],
+  ["Risk","Do we know what can hurt the account next?"]
+];
+
+const CC_ITEMS = [
+  "Account overview","Contract & scope summary","Service catalogue","Stakeholder map","RACI",
+  "SLA/KPI dashboard","Incident tracker","Problem tracker","Change tracker","RAID log",
+  "Resource & capacity matrix","Customer escalation log","Continual improvement register",
+  "Revenue/cost/margin summary","Forecast & variance","Monthly service review","30-60-90 action plan"
+];
+
+const QUESTION_BANK = {
+  "Service": ["What are our top three SLA risks?","What caused the last P1?","Which problems are recurring?","What service is most critical to the business?","Where are our operational single points of failure?"],
+  "People": ["Do we have enough capacity?","Which skills are critical?","Who are the succession risks?","Where are we overstaffed or understaffed?","What is our utilization and why?"],
+  "Customer": ["Who can approve changes?","Who can escalate us?","What does the client value most?","What are they unhappy about?","Do they trust us?"],
+  "Financial": ["What is monthly revenue?","What is delivery cost?","What is gross margin?","What is driving margin movement?","Are we leaking revenue?","What is our forecast?"],
+  "Commercial": ["What is outside scope?","What work is being done without funding?","Which upcoming demands could become CRs?","When does the contract renew?","Where could the account legitimately expand?"]
+};
+
+let state = {
+  joinDate: null,
+  philosophy: {},
+  health: {},
+  days: {},
+  cc: {}
+};
+
+function debounce(fn, ms){
+  let t;
+  return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn(...args), ms); };
+}
+
+async function loadState(){
+  try{
+    const res = await window.storage.get(STORAGE_KEY, false);
+    if(res && res.value){
+      const parsed = JSON.parse(res.value);
+      state = Object.assign(state, parsed);
+    }
+  }catch(e){ /* no saved state yet */ }
+}
+
+const saveState = debounce(async ()=>{
+  try{ await window.storage.set(STORAGE_KEY, JSON.stringify(state), false); }catch(e){}
+}, 400);
+
+function fmtCurrency(n){
+  if(isNaN(n)) return '—';
+  return '₹' + Math.round(n).toLocaleString('en-IN');
+}
+
+function updateCountdown(){
+  const el = document.getElementById('daysLeft');
+  if(!state.joinDate){ el.textContent = '20'; return; }
+  const now = new Date(); now.setHours(0,0,0,0);
+  const jd = new Date(state.joinDate + 'T00:00:00');
+  const diff = Math.round((jd-now)/86400000);
+  el.textContent = diff >= 0 ? diff : '0';
+}
+
+function renderPhilosophy(){
+  document.querySelectorAll('#philosophyList li').forEach(li=>{
+    const i = li.dataset.i;
+    if(state.philosophy[i]) li.classList.add('done'); else li.classList.remove('done');
+    li.onclick = ()=>{
+      state.philosophy[i] = !state.philosophy[i];
+      li.classList.toggle('done');
+      saveState();
+    };
+  });
+}
+
+function renderHealth(){
+  const grid = document.getElementById('healthGrid');
+  grid.innerHTML = '';
+  HEALTH_DIMS.forEach(([dim,q],i)=>{
+    const rec = state.health[i] || {status:'A', note:''};
+    const row = document.createElement('div');
+    row.className = 'health-row';
+    row.innerHTML = `
+      <div><div class="dim">${dim}</div><div class="q">${q}</div></div>
+      <textarea placeholder="Notes...">${rec.note||''}</textarea>
+      <select class="status ${rec.status}">
+        <option value="G" ${rec.status==='G'?'selected':''}>Green</option>
+        <option value="A" ${rec.status==='A'?'selected':''}>Amber</option>
+        <option value="R" ${rec.status==='R'?'selected':''}>Red</option>
+      </select>
+    `;
+    const select = row.querySelector('select');
+    const textarea = row.querySelector('textarea');
+    select.onchange = ()=>{
+      select.className = 'status ' + select.value;
+      state.health[i] = { status: select.value, note: textarea.value };
+      saveState();
+    };
+    textarea.oninput = ()=>{
+      state.health[i] = { status: select.value, note: textarea.value };
+      saveState();
+    };
+    grid.appendChild(row);
+  });
+}
+
+function renderDays(){
+  const list = document.getElementById('dayList');
+  list.innerHTML = '';
+  DAYS.forEach(([focus,output],i)=>{
+    const rec = state.days[i] || {done:false, note:''};
+    const card = document.createElement('div');
+    card.className = 'day-card' + (rec.done ? ' done':'');
+    card.innerHTML = `
+      <div class="day-card-top">
+        <input type="checkbox" ${rec.done?'checked':''}>
+        <div class="day-meta">
+          <div class="day-num">Day ${i+1}</div>
+          <div class="day-focus ${rec.done?'done-text':''}">${focus}</div>
+          <div class="day-output">${output}</div>
+          <button class="day-notes-toggle">+ notes</button>
+          <div class="day-notes"><textarea placeholder="Your notes for this day...">${rec.note||''}</textarea></div>
+        </div>
+      </div>
+    `;
+    const checkbox = card.querySelector('input');
+    const toggle = card.querySelector('.day-notes-toggle');
+    const notesDiv = card.querySelector('.day-notes');
+    const textarea = card.querySelector('textarea');
+    const focusEl = card.querySelector('.day-focus');
+    if((rec.note||'').length>0) { notesDiv.classList.add('open'); toggle.textContent='– notes'; }
+
+    checkbox.onchange = ()=>{
+      rec.done = checkbox.checked;
+      state.days[i] = rec;
+      card.classList.toggle('done', rec.done);
+      focusEl.classList.toggle('done-text', rec.done);
+      saveState();
+      renderProgress();
+    };
+    toggle.onclick = ()=>{
+      notesDiv.classList.toggle('open');
+      toggle.textContent = notesDiv.classList.contains('open') ? '– notes' : '+ notes';
+    };
+    textarea.oninput = ()=>{
+      rec.note = textarea.value;
+      state.days[i] = rec;
+      saveState();
+    };
+    list.appendChild(card);
+  });
+  renderProgress();
+}
+
+function renderProgress(){
+  const total = DAYS.length;
+  const done = Object.values(state.days).filter(d=>d && d.done).length;
+  document.getElementById('planBar').style.width = (done/total*100)+'%';
+  document.getElementById('overallProgress').innerHTML = `<b>${done}/${total}</b> days complete`;
+}
+
+function renderCC(){
+  const list = document.getElementById('ccList');
+  list.innerHTML = '';
+  CC_ITEMS.forEach((name,i)=>{
+    const rec = state.cc[i] || false;
+    const row = document.createElement('div');
+    row.className = 'cc-row';
+    row.innerHTML = `
+      <input type="checkbox" ${rec?'checked':''}>
+      <span class="cc-num">${String(i+1).padStart(2,'0')}</span>
+      <span class="cc-name ${rec?'done':''}">${name}</span>
+    `;
+    const cb = row.querySelector('input');
+    const label = row.querySelector('.cc-name');
+    cb.onchange = ()=>{
+      state.cc[i] = cb.checked;
+      label.classList.toggle('done', cb.checked);
+      saveState();
+    };
+    list.appendChild(row);
+  });
+}
+
+function renderAccordion(){
+  const wrap = document.getElementById('accordionWrap');
+  wrap.innerHTML = '';
+  Object.entries(QUESTION_BANK).forEach(([cat,items])=>{
+    const acc = document.createElement('div');
+    acc.className = 'accordion';
+    acc.innerHTML = `
+      <button class="acc-head"><span>${cat}</span><span class="chev">›</span></button>
+      <div class="acc-body"><ul>${items.map(q=>`<li>${q}</li>`).join('')}</ul></div>
+    `;
+    const head = acc.querySelector('.acc-head');
+    const body = acc.querySelector('.acc-body');
+    head.onclick = ()=>{
+      head.classList.toggle('open');
+      body.classList.toggle('open');
+    };
+    wrap.appendChild(acc);
+  });
+}
+
+function setupCalculators(){
+  const rev = document.getElementById('calcRevenue');
+  const cost = document.getElementById('calcCost');
+  const gp = document.getElementById('calcGP');
+  const margin = document.getElementById('calcMargin');
+  function calcMargin(){
+    const r = parseFloat(rev.value)||0;
+    const c = parseFloat(cost.value)||0;
+    const profit = r-c;
+    gp.textContent = fmtCurrency(profit);
+    margin.textContent = r>0 ? ((profit/r*100).toFixed(1)+'%') : '—';
+  }
+  rev.oninput = calcMargin; cost.oninput = calcMargin; calcMargin();
+
+  const hc = document.getElementById('calcHC');
+  const hrs = document.getElementById('calcHrs');
+  const billable = document.getElementById('calcBillable');
+  const capacity = document.getElementById('calcCapacity');
+  const util = document.getElementById('calcUtil');
+  function calcUtil(){
+    const h = parseFloat(hc.value)||0;
+    const hr = parseFloat(hrs.value)||0;
+    const b = parseFloat(billable.value)||0;
+    const cap = h*hr;
+    capacity.textContent = cap ? cap.toLocaleString('en-IN') : '—';
+    util.textContent = cap>0 ? ((b/cap*100).toFixed(1)+'%') : '—';
+  }
+  hc.oninput = calcUtil; hrs.oninput = calcUtil; billable.oninput = calcUtil; calcUtil();
+}
+
+function setupTabs(){
+  document.querySelectorAll('#tabs button').forEach(btn=>{
+    btn.onclick = ()=>{
+      document.querySelectorAll('#tabs button').forEach(b=>b.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('panel-'+btn.dataset.tab).classList.add('active');
+    };
+  });
+}
+
+function setupJoinDate(){
+  const input = document.getElementById('joinDate');
+  if(state.joinDate){
+    input.value = state.joinDate;
+  } else {
+    const d = new Date();
+    d.setDate(d.getDate()+20);
+    state.joinDate = d.toISOString().slice(0,10);
+    input.value = state.joinDate;
+  }
+  updateCountdown();
+  input.onchange = ()=>{
+    state.joinDate = input.value;
+    updateCountdown();
+    saveState();
+  };
+}
+
+document.getElementById('resetBtn').onclick = async ()=>{
+  if(!confirm('Reset all checkboxes and notes on this dashboard? This cannot be undone.')) return;
+  state = { joinDate: state.joinDate, philosophy:{}, health:{}, days:{}, cc:{} };
+  try{ await window.storage.set(STORAGE_KEY, JSON.stringify(state), false); }catch(e){}
+  renderAll();
+};
+
+function renderAll(){
+  renderPhilosophy();
+  renderHealth();
+  renderDays();
+  renderCC();
+  renderAccordion();
+  setupJoinDate();
+}
+
+(async function init(){
+  await loadState();
+  setupTabs();
+  setupCalculators();
+  renderAll();
+})();
+</script>
+</body>
+</html>
